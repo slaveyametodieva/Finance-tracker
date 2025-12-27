@@ -1,7 +1,11 @@
 #include<iostream>
+#include<iomanip>
 using std::cin;
 using std::cout;
 using std::endl;
+using std::setw;
+using std::setprecision;
+using std::fixed;
 
 struct Month {
     int id;     
@@ -64,6 +68,7 @@ const char* getMonthName(int id) {
     default: return "Unknown";
     }
 }
+
 int main()
 {
     char command[MAX_LENGTH_STR];
@@ -115,7 +120,7 @@ int main()
                 cout << "Please run 'setup' first" << '\n';
                 continue;
             }
-
+           
             cout << "Enter month (1-" << monthsCount << "): ";
             int inputMonth;
             cin >> inputMonth;
@@ -124,6 +129,7 @@ int main()
                 cout << "Invalid month! Please enter a number between 1 and " << monthsCount << endl;
                 continue;
             }
+
             int idx = inputMonth - 1;
 
             cout << "Enter income: ";
@@ -146,19 +152,37 @@ int main()
                 {
                    cout << "Result: Balance for month " << inputMonth << " = " << months[idx].balance << endl;
                 }
+                cout << '\n';
         }
         
-        /*else if (strCmp(command, REPORT))
+        else if (strCmp(command, REPORT))
         {
-            cout << "Month | Income | Expense | Balance" << '\n';
-            cout << "-------------------------------------" << '\n';
+            double totalIncome = 0;
+            double totalExpense = 0;
+
+            cout <<setw(15) << "Month" << setw(10) << "Income" << setw(10) << "Expense" << setw(10) << "Balance" << '\n';
+            cout << "--------------------------------------------------" << '\n';
+            cout << fixed << setprecision(2);
             for (int i = 0; i < monthsCount; i++)
             {
+                totalIncome += months[i].income;
+                totalExpense += months[i].expense;
+
                 int currMonthCount = i + 1;
-                cout<<getMonthName(currMonthCount)<<" | "<<months[i].income
+
+                cout<<setw(10)<<getMonthName(currMonthCount) <<" | "<<setw(10) <<months[i].income << " | " << setw(10) << months[i].expense << " | " << setw(10) << months[i].balance << '\n';
             }
+            double averageBalance =(totalIncome - totalExpense)/monthsCount;
+
+            cout << "-------------------------------------" << '\n';
+            cout << "Total income: " << totalIncome << '\n';
+            cout << "Total expense: " << totalExpense << '\n';
+            cout << "Average balance: " << averageBalance << '\n';
+
+            cout << "\n\n";
+
         }
-        */
+
     }
     delete[] months;
 }
