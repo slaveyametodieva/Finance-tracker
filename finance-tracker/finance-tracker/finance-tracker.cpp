@@ -12,6 +12,7 @@ struct Month {
     double income;    
     double expense;  
     double balance;
+    bool isFilled;
 };
 const int MIN_MONTH_COUNT = 1;
 const int MAX_MONTH_COUNT = 12;
@@ -69,6 +70,9 @@ const char* getMonthName(int id) {
     }
 }
 
+bool isMonthFilled(const Month month) {
+    return month.isFilled;
+}
 int main()
 {
     char command[MAX_LENGTH_STR];
@@ -107,6 +111,8 @@ int main()
                 months[i].id = i + 1;
                 months[i].income = 0.0;
                 months[i].expense = 0.0;
+                months[i].balance = 0.0;
+                months[i].isFilled = false;
             }
             isSetupDone = true;
             cout << "Profile created successfully."<<"\n\n";
@@ -132,6 +138,18 @@ int main()
 
             int idx = inputMonth - 1;
 
+            if (isMonthFilled(months[idx]))
+            {
+                char choice;
+                cout << "Data for " << getMonthName(inputMonth) << " already exists! Overwrite? (y/n): ";
+                cin >> choice;
+
+                if (choice != 'y')
+                {
+                    cout << "Opratation cancelled." << '\n';
+                    continue;
+                }
+            }
             cout << "Enter income: ";
             cin >> months[idx].income;
             if (months[idx].income < MIN_INCOME)
@@ -139,6 +157,7 @@ int main()
                 cout << "Income cannot be negative!" << "\n";
                 continue;
             }
+            months[idx].isFilled = true;
             cout << "Enter expense: ";
             cin >> months[idx].expense;
 
@@ -150,7 +169,7 @@ int main()
                 }
                 else 
                 {
-                   cout << "Result: Balance for month " << inputMonth << " = " << months[idx].balance << endl;
+                   cout << "Result: Balance for month " << getMonthName(inputMonth) << " = " << months[idx].balance << endl;
                 }
                 cout << '\n';
         }
@@ -160,7 +179,7 @@ int main()
             double totalIncome = 0;
             double totalExpense = 0;
 
-            cout <<setw(15) << "Month" << setw(10) << "Income" << setw(10) << "Expense" << setw(10) << "Balance" << '\n';
+            cout <<setw(10) << "Month" << setw(10) << "Income" << setw(10) << "Expense" << setw(10) << "Balance" << '\n';
             cout << "--------------------------------------------------" << '\n';
             cout << fixed << setprecision(2);
             for (int i = 0; i < monthsCount; i++)
