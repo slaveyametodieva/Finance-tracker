@@ -72,7 +72,7 @@ int main()
     while (true) {
         cout << ">";
         cin >> command;
-        if (strcmp(command, EXIT)) 
+        if (strCmp(command, EXIT)) 
         {
             break;
         }
@@ -105,38 +105,40 @@ int main()
             cout << "Profile created successfully." << '\n\n';
         }
 
+        else if (strCmp(command, ADD)) {
 
-        cout << "> " << '\n';
-        cin >> command;
-        if (!strCmp(command, ADD)) {
-            return -1;
-        }
+            if (!isSetupDone)
+            {
+                cout << "Please run 'setup' first" << '\n';
+                break;
+            }
 
+            cout << "Enter month (1-" << monthsCount << "): ";
+            int inputMonth;
+            cin >> inputMonth;
 
-        cout << "Enter month (1-" << monthsCount << "): ";
-        int inputMonth;
-        cin >> inputMonth;
+            if (!(validateMonthRange(inputMonth, monthsCount))) {
+                cout << "Invalid month! Please enter a number between 1 and " << monthsCount << endl;
+                return -5;
+            }
+            int idx = inputMonth - 1;
 
-        if (!(validateMonthRange(inputMonth, monthsCount))) {
-            cout << "Invalid month! Please enter a number between 1 and " << monthsCount << endl;
-            delete[] months;
-            return -5;
-        }
+            cout << "Enter income: ";
+            cin >> months[idx].income;
 
-        int idx = inputMonth - 1;
+            cout << "Enter expense: ";
+            cin >> months[idx].expense;
 
-        cout << "Enter income: ";
-        cin >> months[idx].income;
+            double balance = months[idx].income - months[idx].expense;
+                if (balance > 0)
+                {
+                   cout << "Result: Balance for " << getMonthName(inputMonth) << inputMonth << " =+ " << balance << endl;
+                }
+                else 
+                {
+                   cout << "Result: Balance for month " << inputMonth << " = " << balance << endl;
+                }
 
-        cout << "Enter expense: ";
-        cin >> months[idx].expense;
-
-        double balance = months[idx].income - months[idx].expense;
-        if (balance > 0) {
-            cout << "Result: Balance for " << getMonthName(inputMonth) << inputMonth << " =+ " << balance << endl;
-        }
-        else {
-            cout << "Result: Balance for month " << inputMonth << " = " << balance << endl;
         }
     }
     delete[] months;
