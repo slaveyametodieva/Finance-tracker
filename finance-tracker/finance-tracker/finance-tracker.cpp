@@ -84,7 +84,7 @@ int main()
             if (!validateMonthsCount(inputCount))
             {
                 cout << "The profile can not be created! Invalid months count! Must be between 1 and 12." << '\n';
-                return -5;
+                continue;
             }
             
             if (months != nullptr)
@@ -102,7 +102,7 @@ int main()
                 months[i].expense = 0.0;
             }
             isSetupDone = true;
-            cout << "Profile created successfully." << '\n\n';
+            cout << "Profile created successfully."<<"\n\n";
         }
 
         else if (strCmp(command, ADD)) {
@@ -110,7 +110,7 @@ int main()
             if (!isSetupDone)
             {
                 cout << "Please run 'setup' first" << '\n';
-                break;
+                continue;
             }
 
             cout << "Enter month (1-" << monthsCount << "): ";
@@ -119,7 +119,7 @@ int main()
 
             if (!(validateMonthRange(inputMonth, monthsCount))) {
                 cout << "Invalid month! Please enter a number between 1 and " << monthsCount << endl;
-                return -5;
+                continue;
             }
             int idx = inputMonth - 1;
 
@@ -132,7 +132,7 @@ int main()
             double balance = months[idx].income - months[idx].expense;
                 if (balance > 0)
                 {
-                   cout << "Result: Balance for " << getMonthName(inputMonth) << inputMonth << " =+ " << balance << endl;
+                   cout << "Result: Balance for " << getMonthName(inputMonth) <<" "<< inputMonth << " =+ " << balance << endl;
                 }
                 else 
                 {
