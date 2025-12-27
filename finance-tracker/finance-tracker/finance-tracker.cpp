@@ -13,8 +13,9 @@ const int MAX_MONTH_COUNT = 12;
 const int MAX_LENGTH_STR = 50;
 const int MIN_INCOME = 0;
 
-const char SETUP[] = {"setup"};
-const char ADD[] = { "add" };
+const char SETUP[] = "setup";
+const char ADD[] =  "add" ;
+const char EXIT[] = "exit";
 
 void clearCommand(char *command) {
     if (command) {
@@ -69,66 +70,69 @@ const char* getMonthName(int id) {
 int main()
 {
     char command[MAX_LENGTH_STR];
+    while (true) {
+        cout << ">";
+        cin >> command;
+        if (strcmp(command, EXIT)) {
+            break;
+        }
+        if (!strCmp(command, SETUP)) {
+            return -1;
+        }
+        clearCommand(command);
 
-    cout << ">";
-    cin >> command;
-    if (!strCmp(command, SETUP)) {
-        return -1;
+        cout << "Enter number of months: ";
+
+        int monthsCount;
+        cin >> monthsCount;
+
+        if (!validateMonthsCount(monthsCount))
+        {
+            cout << "The profile can not be created! Invalid months count!" << '\n';
+            return -5;
+        }
+        cout << "Profile created successfully." << '\n';
+        cout << "\n\n";
+
+        Month* months = nullptr;
+        months = new Month[monthsCount];
+        for (int i = 0; i < monthsCount; i++) {
+            months[i].id = i + 1;
+            months[i].income = 0.0;
+            months[i].expense = 0.0;
+        }
+        cout << "> " << '\n';
+        cin >> command;
+        if (!strCmp(command, ADD)) {
+            return -1;
+        }
+        clearCommand(command);
+
+        cout << "Enter month (1-" << monthsCount << "): ";
+        int inputMonth;
+        cin >> inputMonth;
+
+        if (!(validateMonthRange(inputMonth, monthsCount))) {
+            cout << "Invalid month! Please enter a number between 1 and " << monthsCount << endl;
+            delete[] months;
+            return -5;
+        }
+
+        int idx = inputMonth - 1;
+
+        cout << "Enter income: ";
+        cin >> months[idx].income;
+
+        cout << "Enter expense: ";
+        cin >> months[idx].expense;
+
+        double balance = months[idx].income - months[idx].expense;
+        if (balance > 0) {
+            cout << "Result: Balance for " << getMonthName(inputMonth) << inputMonth << " =+ " << balance << endl;
+        }
+        else {
+            cout << "Result: Balance for month " << inputMonth << " = " << balance << endl;
+        }
     }
-    clearCommand(command);
-
-    cout << "Enter number of months: ";
-
-    int monthsCount;
-    cin >> monthsCount;
-
-    if (!validateMonthsCount(monthsCount)) 
-    {
-        cout << "The profile can not be created! Invalid months count!" << '\n';
-        return -5;
-    }
-    cout << "Profile created successfully." << '\n';
-    cout << "\n\n";
-
-    Month* months = nullptr;
-    months = new Month[monthsCount];
-    for (int i = 0; i < monthsCount; i++) {
-        months[i].id = i + 1; 
-        months[i].income = 0.0;
-        months[i].expense = 0.0;
-    }
-    cout << "> " << '\n';
-    cin >> command;
-    if (!strCmp(command, ADD)) {
-        return -1;
-    }
-    clearCommand(command);
-
-    cout << "Enter month (1-"<<monthsCount<<"): ";
-    int inputMonth;
-    cin >> inputMonth;
-
-    if (!(validateMonthRange(inputMonth, monthsCount))) {
-        cout << "Invalid month! Please enter a number between 1 and " << monthsCount << endl;
-        delete[] months;
-        return -5;
-    }
- 
-    int idx = inputMonth - 1;
-    
-    cout << "Enter income: ";
-    cin >> months[idx].income;
-
-    cout << "Enter expense: ";
-    cin >> months[idx].expense;
-
-    double balance = months[idx].income - months[idx].expense;
-    if (balance > 0) {
-        cout << "Result: Balance for "<< getMonthName(inputMonth) << inputMonth << " =+ " << balance << endl;
-    }
-    else {
-        cout << "Result: Balance for month " << inputMonth << " = " << balance << endl;
-    }
-    
     delete[] months;
 }
