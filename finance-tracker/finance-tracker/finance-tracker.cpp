@@ -125,14 +125,18 @@ int main()
 
             cout << "Enter income: ";
             cin >> months[idx].income;
-
+            if (months[idx].income < MIN_INCOME)
+            {
+                cout << "Income cannot be negative!" << "\n";
+                continue;
+            }
             cout << "Enter expense: ";
             cin >> months[idx].expense;
 
             double balance = months[idx].income - months[idx].expense;
                 if (balance > 0)
                 {
-                   cout << "Result: Balance for " << getMonthName(inputMonth) <<" "<< inputMonth << " =+ " << balance << endl;
+                   cout << "Result: Balance for " << getMonthName(inputMonth)<< ": +" << balance << endl;
                 }
                 else 
                 {
