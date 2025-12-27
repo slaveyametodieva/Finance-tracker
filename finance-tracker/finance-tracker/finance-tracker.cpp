@@ -7,6 +7,7 @@ struct Month {
     int id;     
     double income;    
     double expense;  
+    double balance;
 };
 const int MIN_MONTH_COUNT = 1;
 const int MAX_MONTH_COUNT = 12;
@@ -16,6 +17,7 @@ const int MIN_INCOME = 0;
 const char SETUP[] = "setup";
 const char ADD[] =  "add" ;
 const char EXIT[] = "exit";
+const char REPORT[] = "report";
 
 bool strCmp(const char* input, const char* wantedCommand) {
     if (!input) {
@@ -105,7 +107,8 @@ int main()
             cout << "Profile created successfully."<<"\n\n";
         }
 
-        else if (strCmp(command, ADD)) {
+        else if (strCmp(command, ADD))
+        {
 
             if (!isSetupDone)
             {
@@ -133,17 +136,29 @@ int main()
             cout << "Enter expense: ";
             cin >> months[idx].expense;
 
-            double balance = months[idx].income - months[idx].expense;
-                if (balance > 0)
+            months[idx].balance = months[idx].income - months[idx].expense;
+
+                if (months[idx].balance > 0)
                 {
-                   cout << "Result: Balance for " << getMonthName(inputMonth)<< ": +" << balance << endl;
+                   cout << "Result: Balance for " << getMonthName(inputMonth)<< ": +" << months[idx].balance << endl;
                 }
                 else 
                 {
-                   cout << "Result: Balance for month " << inputMonth << " = " << balance << endl;
+                   cout << "Result: Balance for month " << inputMonth << " = " << months[idx].balance << endl;
                 }
-
         }
+        
+        /*else if (strCmp(command, REPORT))
+        {
+            cout << "Month | Income | Expense | Balance" << '\n';
+            cout << "-------------------------------------" << '\n';
+            for (int i = 0; i < monthsCount; i++)
+            {
+                int currMonthCount = i + 1;
+                cout<<getMonthName(currMonthCount)<<" | "<<months[i].income
+            }
+        }
+        */
     }
     delete[] months;
 }
