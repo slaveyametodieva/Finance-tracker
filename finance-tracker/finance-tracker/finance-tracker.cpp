@@ -17,7 +17,7 @@ struct Month {
 const int MIN_MONTH_COUNT = 1;
 const int MAX_MONTH_COUNT = 12;
 const int MAX_LENGTH_STR = 50;
-const int MIN_INCOME = 0;
+const int MIN_INCOME_EXPENSE = 0;
 
 const char SETUP[] = "setup";
 const char ADD[] =  "add" ;
@@ -72,6 +72,11 @@ const char* getMonthName(int id) {
 
 bool isMonthFilled(const Month month) {
     return month.isFilled;
+}
+
+bool validateIncomeExpense(double sum)
+{
+    return sum >= MIN_INCOME_EXPENSE;
 }
 int main()
 {
@@ -152,14 +157,21 @@ int main()
             }
             cout << "Enter income: ";
             cin >> months[idx].income;
-            if (months[idx].income < MIN_INCOME)
+            if (!validateIncomeExpense(months[idx].income))
             {
                 cout << "Income cannot be negative!" << "\n";
                 continue;
             }
-            months[idx].isFilled = true;
+
             cout << "Enter expense: ";
             cin >> months[idx].expense;
+
+            if (!validateIncomeExpense(months[idx].expense))
+            {
+                cout << "Expense cannot be negative" << '\n';
+                continue;
+            }
+            months[idx].isFilled = true;
 
             months[idx].balance = months[idx].income - months[idx].expense;
 
@@ -171,6 +183,7 @@ int main()
                 {
                    cout << "Result: Balance for month " << getMonthName(inputMonth) << " = " << months[idx].balance << endl;
                 }
+
                 cout << '\n';
         }
         
