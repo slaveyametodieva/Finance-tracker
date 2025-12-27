@@ -17,11 +17,6 @@ const char SETUP[] = "setup";
 const char ADD[] =  "add" ;
 const char EXIT[] = "exit";
 
-void clearCommand(char *command) {
-    if (command) {
-        *command = '\0';
-    }
-}
 bool strCmp(const char* input, const char* wantedCommand) {
     if (!input) {
         return false;
@@ -70,43 +65,53 @@ const char* getMonthName(int id) {
 int main()
 {
     char command[MAX_LENGTH_STR];
+    Month* months = nullptr;
+    int monthsCount = 0;
+    bool isSetupDone = false;
+
     while (true) {
         cout << ">";
         cin >> command;
-        if (strcmp(command, EXIT)) {
+        if (strcmp(command, EXIT)) 
+        {
             break;
         }
-        if (!strCmp(command, SETUP)) {
-            return -1;
-        }
-        clearCommand(command);
-
-        cout << "Enter number of months: ";
-
-        int monthsCount;
-        cin >> monthsCount;
-
-        if (!validateMonthsCount(monthsCount))
+        else if (strCmp(command, SETUP))
         {
-            cout << "The profile can not be created! Invalid months count!" << '\n';
-            return -5;
-        }
-        cout << "Profile created successfully." << '\n';
-        cout << "\n\n";
+            cout << "Enter number of months: ";
+            int inputCount;
+            cin >> inputCount;
+            if (!validateMonthsCount(inputCount))
+            {
+                cout << "The profile can not be created! Invalid months count! Must be between 1 and 12." << '\n';
+                return -5;
+            }
+            
+            if (months != nullptr)
+            {
+                delete[] months;
+            }
 
-        Month* months = nullptr;
-        months = new Month[monthsCount];
-        for (int i = 0; i < monthsCount; i++) {
-            months[i].id = i + 1;
-            months[i].income = 0.0;
-            months[i].expense = 0.0;
+            monthsCount = inputCount;
+            months = new Month[monthsCount];
+
+            for (int i = 0; i < monthsCount; i++) 
+            {
+                months[i].id = i + 1;
+                months[i].income = 0.0;
+                months[i].expense = 0.0;
+            }
+            isSetupDone = true;
+            cout << "Profile created successfully." << '\n\n';
         }
+
+
         cout << "> " << '\n';
         cin >> command;
         if (!strCmp(command, ADD)) {
             return -1;
         }
-        clearCommand(command);
+
 
         cout << "Enter month (1-" << monthsCount << "): ";
         int inputMonth;
