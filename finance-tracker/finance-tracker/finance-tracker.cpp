@@ -106,6 +106,78 @@ void executeSetup(Month*& months, int& monthsCount, bool& isSetupDone) {
     isSetupDone = true;
     cout << "Profile created successfully." << "\n\n";
 }
+
+bool shouldOverwrite(int monthId) {
+    char choice;
+    cout << "Data for " << getMonthName(monthId) << " already exists! Overwrite? (y/n): ";
+    cin >> choice;
+
+    if (choice != 'y') {
+        cout << "Operation cancelled." << '\n';
+        return false;
+    }
+    return true;
+}
+
+bool processMonthEntry(Month* months, int idx, int displayMonthId) {
+    cout << "Enter income: ";
+    cin >> months[idx].income;
+
+    if (!validateIncomeExpense(months[idx].income)) {
+        cout << "Income cannot be negative!" << "\n";
+        return false;
+    }
+
+    cout << "Enter expense: ";
+    cin >> months[idx].expense;
+
+    if (!validateIncomeExpense(months[idx].expense)) {
+        cout << "Expense cannot be negative" << '\n';
+        return false;
+    }
+
+    months[idx].isFilled = true;
+    months[idx].balance = months[idx].income - months[idx].expense;
+
+    if (months[idx].balance > 0) {
+        cout << "Result: Balance for " << getMonthName(displayMonthId) << ": +" << months[idx].balance << endl;
+    }
+    else {
+        cout << "Result: Balance for month " << getMonthName(displayMonthId) << " = " << months[idx].balance << endl;
+    }
+
+    return true;
+}
+void executeAdd(Month* months, int monthsCount, bool isSetupDone) {
+    if (!isSetupDone) {
+        cout << "Please run 'setup' first" << '\n';
+        return; 
+    }
+
+    cout << "Enter month (1-" << monthsCount << "): ";
+    int inputMonth;
+    cin >> inputMonth;
+
+    if (!(validateMonthRange(inputMonth, monthsCount))) {
+        cout << "Invalid month! Please enter a number between 1 and " << monthsCount << endl;
+        return;
+    }
+
+    int idx = inputMonth - 1;
+
+    if (isMonthFilled(months[idx])) {
+        if (!shouldOverwrite(inputMonth)) {
+            return;
+        } 
+    }
+
+    if (!processMonthEntry(months, idx, inputMonth))
+    {
+        return;
+    }
+
+    cout << '\n';
+}
 int main()
 {
     char command[MAX_LENGTH_STR];
@@ -127,66 +199,7 @@ int main()
 
         else if (strCmp(command, ADD))
         {
-
-            if (!isSetupDone)
-            {
-                cout << "Please run 'setup' first" << '\n';
-                continue;
-            }
-           
-            cout << "Enter month (1-" << monthsCount << "): ";
-            int inputMonth;
-            cin >> inputMonth;
-
-            if (!(validateMonthRange(inputMonth, monthsCount))) {
-                cout << "Invalid month! Please enter a number between 1 and " << monthsCount << endl;
-                continue;
-            }
-
-            int idx = inputMonth - 1;
-
-            if (isMonthFilled(months[idx]))
-            {
-                char choice;
-                cout << "Data for " << getMonthName(inputMonth) << " already exists! Overwrite? (y/n): ";
-                cin >> choice;
-
-                if (choice != 'y')
-                {
-                    cout << "Opratation cancelled." << '\n';
-                    continue;
-                }
-            }
-            cout << "Enter income: ";
-            cin >> months[idx].income;
-            if (!validateIncomeExpense(months[idx].income))
-            {
-                cout << "Income cannot be negative!" << "\n";
-                continue;
-            }
-
-            cout << "Enter expense: ";
-            cin >> months[idx].expense;
-
-            if (!validateIncomeExpense(months[idx].expense))
-            {
-                cout << "Expense cannot be negative" << '\n';
-                continue;
-            }
-            months[idx].isFilled = true;
-
-            months[idx].balance = months[idx].income - months[idx].expense;
-
-                if (months[idx].balance > 0)
-                {
-                   cout << "Result: Balance for " << getMonthName(inputMonth)<< ": +" << months[idx].balance << endl;
-                }
-                else 
-                {
-                   cout << "Result: Balance for month " << getMonthName(inputMonth) << " = " << months[idx].balance << endl;
-                }
-
-                cout << '\n';
+            executeAdd(months, monthsCount, isSetupDone);
         }
         
         else if (strCmp(command, REPORT))
