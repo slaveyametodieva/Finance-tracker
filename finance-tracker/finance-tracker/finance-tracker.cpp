@@ -78,6 +78,34 @@ bool validateIncomeExpense(double sum)
 {
     return sum >= MIN_INCOME_EXPENSE;
 }
+void executeSetup(Month*& months, int& monthsCount, bool& isSetupDone) {
+    cout << "Enter number of months: ";
+    int inputCount;
+    cin >> inputCount;
+
+    if (!validateMonthsCount(inputCount)) {
+        cout << "The profile can not be created! Invalid months count! Must be between 1 and 12." << '\n';
+        return;
+    }
+
+    if (months != nullptr) {
+        delete[] months;
+    }
+
+    monthsCount = inputCount;
+    months = new Month[monthsCount];
+
+    for (int i = 0; i < monthsCount; i++) {
+        months[i].id = i + 1;
+        months[i].income = 0.0;
+        months[i].expense = 0.0;
+        months[i].balance = 0.0;
+        months[i].isFilled = false;
+    }
+
+    isSetupDone = true;
+    cout << "Profile created successfully." << "\n\n";
+}
 int main()
 {
     char command[MAX_LENGTH_STR];
@@ -94,33 +122,7 @@ int main()
         }
         else if (strCmp(command, SETUP))
         {
-            cout << "Enter number of months: ";
-            int inputCount;
-            cin >> inputCount;
-            if (!validateMonthsCount(inputCount))
-            {
-                cout << "The profile can not be created! Invalid months count! Must be between 1 and 12." << '\n';
-                continue;
-            }
-            
-            if (months != nullptr)
-            {
-                delete[] months;
-            }
-
-            monthsCount = inputCount;
-            months = new Month[monthsCount];
-
-            for (int i = 0; i < monthsCount; i++) 
-            {
-                months[i].id = i + 1;
-                months[i].income = 0.0;
-                months[i].expense = 0.0;
-                months[i].balance = 0.0;
-                months[i].isFilled = false;
-            }
-            isSetupDone = true;
-            cout << "Profile created successfully."<<"\n\n";
+            executeSetup(months, monthsCount, isSetupDone);
         }
 
         else if (strCmp(command, ADD))
