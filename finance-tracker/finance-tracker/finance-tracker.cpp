@@ -178,6 +178,50 @@ void executeAdd(Month* months, int monthsCount, bool isSetupDone) {
 
     cout << '\n';
 }
+
+void printMonthsInfo(const Month* months, int idx) {
+    int currMonthCount = idx + 1;
+        cout << setw(10) << getMonthName(currMonthCount)
+            << " | " << setw(10) << months[idx].income
+            << " | " << setw(10) << months[idx].expense
+            << " | " << setw(10) << months[idx].balance << '\n';
+}
+
+void printReportSummary(double totalIncome, double totalExpense, int count) {
+
+    double averageBalance = (count > 0) ? (totalIncome - totalExpense) / count : 0.0;
+
+    cout << "-------------------------------------" << '\n';
+    cout << "Total income:    " << totalIncome << '\n';
+    cout << "Total expense:   " << totalExpense << '\n';
+    cout << "Average balance: " << averageBalance << '\n';
+    cout << "\n\n";
+}
+
+void executeReport(const Month* months, int monthsCount, bool isSetupDone) {
+    if (!isSetupDone || monthsCount == 0) {
+        cout << "Please run 'setup' first to generate report." << '\n';
+        return;
+    }
+
+    double totalIncome = 0;
+    double totalExpense = 0;
+
+    cout << setw(10) << "Month" << setw(10) << "Income" << setw(10) << "Expense" << setw(10) << "Balance" << '\n';
+    cout << "--------------------------------------------------" << '\n';
+    cout << fixed << setprecision(2);
+
+    for (int i = 0; i < monthsCount; i++)
+    {
+        totalIncome += months[i].income;
+        totalExpense += months[i].expense;
+
+        printMonthsInfo(months, i);
+    }
+
+    printReportSummary(totalIncome, totalExpense, monthsCount);
+}
+
 int main()
 {
     char command[MAX_LENGTH_STR];
@@ -204,30 +248,7 @@ int main()
         
         else if (strCmp(command, REPORT))
         {
-            double totalIncome = 0;
-            double totalExpense = 0;
-
-            cout <<setw(10) << "Month" << setw(10) << "Income" << setw(10) << "Expense" << setw(10) << "Balance" << '\n';
-            cout << "--------------------------------------------------" << '\n';
-            cout << fixed << setprecision(2);
-            for (int i = 0; i < monthsCount; i++)
-            {
-                totalIncome += months[i].income;
-                totalExpense += months[i].expense;
-
-                int currMonthCount = i + 1;
-
-                cout<<setw(10)<<getMonthName(currMonthCount) <<" | "<<setw(10) <<months[i].income << " | " << setw(10) << months[i].expense << " | " << setw(10) << months[i].balance << '\n';
-            }
-            double averageBalance =(totalIncome - totalExpense)/monthsCount;
-
-            cout << "-------------------------------------" << '\n';
-            cout << "Total income: " << totalIncome << '\n';
-            cout << "Total expense: " << totalExpense << '\n';
-            cout << "Average balance: " << averageBalance << '\n';
-
-            cout << "\n\n";
-
+            executeReport(months, monthsCount, isSetupDone);
         }
 
     }
