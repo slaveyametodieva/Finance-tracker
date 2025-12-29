@@ -318,6 +318,32 @@ int getSortChoice()
     return choice;
 }
 
+void printTopMonths(const Month* months,int choice, int monthsCount)
+{
+    cout << " Top 3 months (Sorted by: ";
+    if (choice == 1) cout << "Income";
+    else if (choice == 2) cout << "Expense";
+    else cout << "Balance";
+    cout << ") ---\n";
+
+    int limit = (monthsCount < 3) ? monthsCount : 3;
+    cout << fixed << setprecision(2);
+
+    for (int i = 0; i < limit; i++)
+    {
+        double valueToShow;
+        if (choice == 1) valueToShow = months[i].income;
+        else if (choice == 2) valueToShow = months[i].expense;
+        else valueToShow = months[i].balance;
+
+        cout << (i + 1) << ". " << getMonthName(months[i].id) << ": ";
+        if (valueToShow > 0)
+        {
+            cout << "+";
+        }
+        cout << valueToShow << '\n';
+    }
+}
 void executeSort(Month* months, int monthsCount, bool isSetupDone)
 {
     if (!isSetupDone || monthsCount == 0)
@@ -366,30 +392,7 @@ void executeSort(Month* months, int monthsCount, bool isSetupDone)
             }
         }
     }
-
-    cout << " Top 3 months (Sorted by: ";
-    if (choice == 1) cout << "Income";
-    else if (choice == 2) cout << "Expense";
-    else cout << "Balance";
-    cout << ") ---\n";
-
-    int limit = (monthsCount < 3) ? monthsCount : 3;
-    cout << fixed << setprecision(2);
-    
-    for (int i = 0; i < limit; i++)
-    {
-        double valueToShow;
-        if (choice == 1) valueToShow = months[i].income;
-        else if (choice == 2) valueToShow = months[i].expense;
-        else valueToShow = months[i].balance;
-
-        cout << (i + 1) << ". " << getMonthName(months[i].id)<<": ";
-        if (valueToShow > 0)
-        {
-            cout << "+";
-        }
-        cout << valueToShow << '\n';
-    }
+    printTopMonths(months, choice, monthsCount);
 }
 int main()
 {
