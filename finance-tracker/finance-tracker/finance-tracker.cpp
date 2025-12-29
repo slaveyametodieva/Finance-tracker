@@ -23,6 +23,7 @@ const char SETUP[] = "setup";
 const char ADD[] =  "add" ;
 const char EXIT[] = "exit";
 const char REPORT[] = "report";
+const char SEARCH[] = "search";
 
 bool strCmp(const char* input, const char* wantedCommand) {
     if (!input) {
@@ -148,6 +149,7 @@ bool processMonthEntry(Month* months, int idx, int displayMonthId) {
 
     return true;
 }
+
 void executeAdd(Month* months, int monthsCount, bool isSetupDone) {
     if (!isSetupDone) {
         cout << "Please run 'setup' first" << '\n';
@@ -222,6 +224,74 @@ void executeReport(const Month* months, int monthsCount, bool isSetupDone) {
     printReportSummary(totalIncome, totalExpense, monthsCount);
 }
 
+int getMonthIdByName(const char* monthName)
+{
+    int monthsInAYear = 12;
+    for (int i = 1; i <= monthsInAYear; i++)
+    {
+        if (strCmp(monthName, getMonthName(i)))
+        {
+            return i;
+        }
+    }
+    return 0;
+}
+
+void printMonthInfo(const Month* months, int idx)
+{
+    double percentageExpense;
+    if (months[idx].income == 0)
+    {
+        percentageExpense = 100;
+    }
+    else
+    {
+        percentageExpense = (months[idx].expense / months[idx].income) * 100;
+    }
+    cout << fixed << setprecision(2);
+    cout << "Income: " << months[idx].income << '\n';
+    cout << "Expense: " << months[idx].expense << '\n';
+    cout << "Balance: " << months[idx].balance << '\n';
+    cout << "Expense ratio: " << setprecision(4) << percentageExpense << '\n';
+
+}
+void executeSearch(const Month* months, int monthsCount, bool isSetupDone)
+{
+   
+    if (!isSetupDone || monthsCount==0)
+    {
+        cout << "Please run 'setup first and add data first' " << '\n';
+        return;
+    }
+
+    char wantedMonth[MAX_LENGTH_STR];
+    cin >> wantedMonth;
+
+    int monthID = getMonthIdByName(wantedMonth);
+
+    if (monthID == 0)
+    {
+        cout << "Invalid month name!"<<'\n';
+        return;
+    }
+
+    if (!validateMonthRange(monthID, monthsCount))
+    {
+        cout<<"Month "<<wantedMonth<<" is outside of the configured range (1 - " << monthsCount << ")." << '\n';
+        return;
+    }
+   
+    int monthIdx = monthID - 1;
+
+    if (!months[monthIdx].isFilled)
+    {
+        cout << "No data found for " << getMonthName(monthID) << '\n';
+    }
+    else
+    {
+        printMonthInfo(months, monthIdx);
+    }
+}
 int main()
 {
     char command[MAX_LENGTH_STR];
@@ -249,6 +319,11 @@ int main()
         else if (strCmp(command, REPORT))
         {
             executeReport(months, monthsCount, isSetupDone);
+        }
+        
+        else if (strCmp(command, SEARCH))
+        {
+            executeSearch(months, monthsCount, isSetupDone);
         }
 
     }
