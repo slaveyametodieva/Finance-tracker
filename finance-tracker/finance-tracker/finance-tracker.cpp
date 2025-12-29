@@ -24,6 +24,7 @@ const char ADD[] =  "add" ;
 const char EXIT[] = "exit";
 const char REPORT[] = "report";
 const char SEARCH[] = "search";
+const char SORT[] = "sort";
 
 bool strCmp(const char* input, const char* wantedCommand) {
     if (!input) {
@@ -252,7 +253,7 @@ void printMonthInfo(const Month* months, int idx)
     cout << "Income: " << months[idx].income << '\n';
     cout << "Expense: " << months[idx].expense << '\n';
     cout << "Balance: " << months[idx].balance << '\n';
-    cout << "Expense ratio: " << setprecision(4) << percentageExpense << '\n';
+    cout << "Expense ratio: " << setprecision(4) << percentageExpense <<"%" << '\n';
 
 }
 void executeSearch(const Month* months, int monthsCount, bool isSetupDone)
@@ -292,6 +293,104 @@ void executeSearch(const Month* months, int monthsCount, bool isSetupDone)
         printMonthInfo(months, monthIdx);
     }
 }
+
+void swapMonths(Month& a, Month& b) {
+    Month temp = a;
+    a = b;
+    b = temp;
+}
+
+int getSortChoice()
+{
+    cout << "Sort by: " << '\n';
+    cout << "1.Income" << '\n';
+    cout << "2.Expense " << '\n';
+    cout << "3.Balance" << '\n';
+    cout << "Choice: ";
+
+    int choice;
+    cin >> choice;
+    if (choice < 1 || choice > 3)
+    {
+        cout << "Invalid choice" << '\n';
+        return 0;
+    }
+    return choice;
+}
+
+void executeSort(Month* months, int monthsCount, bool isSetupDone)
+{
+    if (!isSetupDone || monthsCount == 0)
+    {
+        cout << "Please run 'setup first and then run 'sort'' " << '\n';
+        return;
+    }
+
+    int choice = getSortChoice();
+    if (choice == 0)
+    {
+        cout << "Invalid choice" << '\n';
+        return;
+    }
+
+    for (int i = 0; i < monthsCount - 1; i++)
+    {
+        for (int j = 0; j < monthsCount - i - 1; j++)
+        {
+            bool shouldSwap=false;
+            double firstValue, secondValue;
+
+            if (choice == 1)
+            {
+                firstValue = months[j].income;
+                secondValue = months[j + 1].income;
+            }
+            else if (choice == 2)
+            {
+                firstValue = months[j].expense;
+                secondValue = months[j + 1].expense;
+            }
+            else 
+            {
+                firstValue = months[j].balance;
+                secondValue = months[j + 1].balance;
+            }
+
+            if (firstValue < secondValue)
+            {
+                shouldSwap = true;
+            }
+
+            if (shouldSwap) {
+                swapMonths(months[j], months[j + 1]);
+            }
+        }
+    }
+
+    cout << " Top 3 months (Sorted by: ";
+    if (choice == 1) cout << "Income";
+    else if (choice == 2) cout << "Expense";
+    else cout << "Balance";
+    cout << ") ---\n";
+
+    int limit = (monthsCount < 3) ? monthsCount : 3;
+    cout << fixed << setprecision(2);
+    
+    for (int i = 0; i < limit; i++)
+    {
+        double valueToShow;
+        if (choice == 1) valueToShow = months[i].income;
+        else if (choice == 2) valueToShow = months[i].expense;
+        else valueToShow = months[i].balance;
+
+        cout << (i + 1) << ". " << getMonthName(months[i].id)<<": ";
+        if (valueToShow > 0)
+        {
+            cout << "+";
+        }
+        cout << valueToShow << '\n';
+    }
+}
 int main()
 {
     char command[MAX_LENGTH_STR];
@@ -326,6 +425,10 @@ int main()
             executeSearch(months, monthsCount, isSetupDone);
         }
 
+        else if (strCmp(command, SORT))
+        {
+            executeSort(months, monthsCount, isSetupDone);
+        }
     }
     delete[] months;
 }
