@@ -25,6 +25,7 @@ const char EXIT[] = "exit";
 const char REPORT[] = "report";
 const char SEARCH[] = "search";
 const char SORT[] = "sort";
+const char FORECAST[] = "forecast";
 
 bool strCmp(const char* input, const char* wantedCommand) {
     if (!input) {
@@ -394,6 +395,65 @@ void executeSort(Month* months, int monthsCount, bool isSetupDone)
     }
     printTopMonths(months, choice, monthsCount);
 }
+
+double calculateAvgChange(const Month* months, int monthsCount)
+{
+    int firstIdx = -1, lastIdx = -1;
+    for (int i = 0; i < monthsCount; i++)
+    {
+        if (isMonthFilled(months[i]))
+        {
+            if (firstIdx == -1) firstIdx = i;
+            lastIdx = i;
+        }
+    }
+
+    if (firstIdx == -1 || lastIdx == -1 || firstIdx == lastIdx) {
+        return 0.0;
+    }
+
+    double TotalChange = months[lastIdx].balance - months[firstIdx].balance;
+    int timeDiff = lastIdx - firstIdx;
+    return TotalChange / timeDiff;
+}
+void executeForecast(Month * months, int monthsCount, bool isSetupDone)
+{
+    if (!isSetupDone || monthsCount == 0)
+    {
+        cout << "Please run 'setup' first." << '\n';
+        return;
+    }
+
+    int inputedMonths;
+    cin >> inputedMonths;
+
+    if (cin.fail() || inputedMonths < 0)
+    {
+        cin.clear();
+        char temp;
+        while (cin.get(temp) && temp != '\n');
+        cout << "Invalid months input!" << '\n';
+        return;
+    }
+
+    int currentSavings = 0;
+    for (int i = 0; i < monthsCount; i++)
+    {
+        currentSavings += months[i].balance;
+    }
+
+    double avgChange = calculateAvgChange(months, monthsCount);
+
+    cout << "Current savings: " << currentSavings << '\n';
+    cout << "Average monthly change: ";
+    if (avgChange > 0)
+    {
+        cout << "+" << avgChange << '\n';
+    }
+    else cout << avgChange << '\n';
+    double forecastedAmount = currentSavings + (inputedMonths * avgChange);
+    cout << "Predicted savings after " << inputedMonths << " months: " <<fixed<< setprecision(2) << forecastedAmount << '\n';
+}
 int main()
 {
     char command[MAX_LENGTH_STR];
@@ -431,6 +491,11 @@ int main()
         else if (strCmp(command, SORT))
         {
             executeSort(months, monthsCount, isSetupDone);
+        }
+        
+        else if (strCmp(command, FORECAST))
+        {
+            executeForecast(months, monthsCount, isSetupDone);
         }
     }
     delete[] months;
