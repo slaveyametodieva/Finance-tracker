@@ -159,8 +159,9 @@ bool shouldOverwrite(int monthId) {
 }
 
 bool processMonthEntry(Month* months, int idx, int displayMonthId) {
+    double tempIncome, tempExpense;
     cout << "Enter income: ";
-    cin >> months[idx].income;
+    cin >> tempIncome;
 
     if (!validateIncomeExpense(months[idx].income)) {
         cout << "Income cannot be negative!" << "\n";
@@ -168,13 +169,15 @@ bool processMonthEntry(Month* months, int idx, int displayMonthId) {
     }
 
     cout << "Enter expense: ";
-    cin >> months[idx].expense;
+    cin >> tempExpense;
 
     if (!validateIncomeExpense(months[idx].expense)) {
         cout << "Expense cannot be negative" << '\n';
         return false;
     }
 
+    months[idx].income = tempIncome;
+    months[idx].expense = tempExpense;
     months[idx].isFilled = true;
     months[idx].balance = months[idx].income - months[idx].expense;
 
