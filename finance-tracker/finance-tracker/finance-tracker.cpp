@@ -55,6 +55,15 @@ bool validateMonthRange(int month, int currMax) {
     return month >= MIN_MONTH_COUNT && month <= currMax;
 }
 
+bool isSetupDoneAndMonthsC(bool isSetupDone, int monthsCount=1)
+{
+    if (!isSetupDone || monthsCount == 0)
+    {
+        cout << "Please run 'setup' first" << '\n';
+        return false;
+    }
+    return true;
+}
 const char* getMonthName(int id) {
     switch (id) {
     case 1: return "January";
@@ -153,8 +162,7 @@ bool processMonthEntry(Month* months, int idx, int displayMonthId) {
 }
 
 void executeAdd(Month* months, int monthsCount, bool isSetupDone) {
-    if (!isSetupDone) {
-        cout << "Please run 'setup' first" << '\n';
+    if (!isSetupDoneAndMonthsC(isSetupDone)) {
         return; 
     }
 
@@ -203,8 +211,7 @@ void printReportSummary(double totalIncome, double totalExpense, int count) {
 }
 
 void executeReport(const Month* months, int monthsCount, bool isSetupDone) {
-    if (!isSetupDone || monthsCount == 0) {
-        cout << "Please run 'setup' first to generate report." << '\n';
+    if (!isSetupDoneAndMonthsC(isSetupDone, monthsCount)) {
         return;
     }
 
@@ -260,9 +267,8 @@ void printMonthInfo(const Month* months, int idx)
 void executeSearch(const Month* months, int monthsCount, bool isSetupDone)
 {
    
-    if (!isSetupDone || monthsCount==0)
+    if (!isSetupDoneAndMonthsC(isSetupDone, monthsCount))
     {
-        cout << "Please run 'setup first and add data first' " << '\n';
         return;
     }
 
@@ -347,9 +353,8 @@ void printTopMonths(const Month* months,int choice, int monthsCount)
 }
 void executeSort(Month* months, int monthsCount, bool isSetupDone)
 {
-    if (!isSetupDone || monthsCount == 0)
+    if (!isSetupDoneAndMonthsC(isSetupDone, monthsCount))
     {
-        cout << "Please run 'setup first and then run 'sort'' " << '\n';
         return;
     }
 
@@ -418,9 +423,8 @@ double calculateAvgChange(const Month* months, int monthsCount)
 }
 void executeForecast(Month * months, int monthsCount, bool isSetupDone)
 {
-    if (!isSetupDone || monthsCount == 0)
+    if (!isSetupDoneAndMonthsC(isSetupDone, monthsCount))
     {
-        cout << "Please run 'setup' first." << '\n';
         return;
     }
 
