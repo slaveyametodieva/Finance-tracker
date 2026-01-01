@@ -14,18 +14,35 @@ struct Month {
     double balance;
     bool isFilled;
 };
+
+enum CommandType {
+    CMD_EXIT = 0,
+    CMD_SETUP,
+    CMD_ADD,
+    CMD_REPORT,
+    CMD_SEARCH,
+    CMD_SORT,
+    CMD_FORECAST,
+    CMD_CHART,
+    CMD_UNKNOWN
+};
+
+const int COMMANDS_COUNT = 8;
+const char* COMMAND_NAMES[COMMANDS_COUNT] = {
+    "exit",
+    "setup",
+    "add",
+    "report",
+    "search",
+    "sort",
+    "forecast",
+    "chart"
+};
+
 const int MIN_MONTH_COUNT = 1;
 const int MAX_MONTH_COUNT = 12;
 const int MAX_LENGTH_STR = 50;
 const int MIN_INCOME_EXPENSE = 0;
-
-const char SETUP[] = "setup";
-const char ADD[] =  "add" ;
-const char EXIT[] = "exit";
-const char REPORT[] = "report";
-const char SEARCH[] = "search";
-const char SORT[] = "sort";
-const char FORECAST[] = "forecast";
 
 bool strCmp(const char* input, const char* wantedCommand) {
     if (!input) {
@@ -46,6 +63,16 @@ bool strCmp(const char* input, const char* wantedCommand) {
     return false;
 
 }
+
+int getCommandId(const char* input) {
+    for (int i = 0; i < COMMANDS_COUNT; i++) {
+        if (strCmp(input, COMMAND_NAMES[i])) {
+            return i;
+        }
+    }
+    return CMD_UNKNOWN;
+}
+
 bool validateMonthsCount(int input)
 {
     return input >= MIN_MONTH_COUNT && input <= MAX_MONTH_COUNT;
@@ -361,7 +388,6 @@ void executeSort(Month* months, int monthsCount, bool isSetupDone)
     int choice = getSortChoice();
     if (choice == 0)
     {
-        cout << "Invalid choice" << '\n';
         return;
     }
 
@@ -458,7 +484,13 @@ void executeForecast(Month * months, int monthsCount, bool isSetupDone)
     double forecastedAmount = currentSavings + (inputedMonths * avgChange);
     cout << "Predicted savings after " << inputedMonths << " months: " <<fixed<< setprecision(2) << forecastedAmount << '\n';
 }
-int main()
+
+void executeChart(const Month* months, int monthsCount, bool isSetupDone)
+{
+    
+}
+
+void runAplication()
 {
     char command[MAX_LENGTH_STR];
     Month* months = nullptr;
@@ -468,39 +500,49 @@ int main()
     while (true) {
         cout << ">";
         cin >> command;
-        if (strCmp(command, EXIT)) 
-        {
+
+        int cmdId = getCommandId(command);
+
+        switch (cmdId) {
+        case CMD_EXIT:
+            delete[] months;
+
+        case CMD_SETUP:
+            executeSetup(months, monthsCount, isSetupDone);
+            break;
+
+        case CMD_ADD:
+            executeAdd(months, monthsCount, isSetupDone);
+            break;
+
+        case CMD_REPORT:
+            executeReport(months, monthsCount, isSetupDone);
+            break;
+
+        case CMD_SEARCH:
+            executeSearch(months, monthsCount, isSetupDone);
+            break;
+
+        case CMD_SORT:
+            executeSort(months, monthsCount, isSetupDone);
+            break;
+
+        case CMD_FORECAST:
+            executeForecast(months, monthsCount, isSetupDone);
+            break;
+
+        case CMD_CHART:
+            executeChart(months, monthsCount, isSetupDone);
+            break;
+
+        default:
+            cout << "Invalid command! Try again." << endl;
             break;
         }
-        else if (strCmp(command, SETUP))
-        {
-            executeSetup(months, monthsCount, isSetupDone);
-        }
-
-        else if (strCmp(command, ADD))
-        {
-            executeAdd(months, monthsCount, isSetupDone);
-        }
-        
-        else if (strCmp(command, REPORT))
-        {
-            executeReport(months, monthsCount, isSetupDone);
-        }
-        
-        else if (strCmp(command, SEARCH))
-        {
-            executeSearch(months, monthsCount, isSetupDone);
-        }
-
-        else if (strCmp(command, SORT))
-        {
-            executeSort(months, monthsCount, isSetupDone);
-        }
-        
-        else if (strCmp(command, FORECAST))
-        {
-            executeForecast(months, monthsCount, isSetupDone);
-        }
     }
-    delete[] months;
 }
+int main()
+{
+    runAplication();
+}
+
