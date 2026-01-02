@@ -1,3 +1,16 @@
+/**
+*
+* Solution to course project #3
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter semester 2025/2026
+*
+* @author Slaveya Metodieva
+* FN 5MI0600564
+* @compiler VC
+
+*/
+
 #include<iostream>
 #include<iomanip>
 using std::cin;
@@ -121,7 +134,14 @@ void executeSetup(Month*& months, int& monthsCount, bool& isSetupDone) {
     cout << "Enter number of months: ";
     int inputCount;
     cin >> inputCount;
-
+    if (cin.fail())
+    {
+        cin.clear();
+        char temp;
+        while (cin.get(temp) && temp != '\n');
+        cout << "Invalid input! Please enter a number." << "\n\n";
+        return;
+    }
     if (!validateMonthsCount(inputCount)) {
         cout << "The profile can not be created! Invalid months count! Must be between 1 and 12." << '\n';
         return;
@@ -239,7 +259,11 @@ void printReportSummary(double totalIncome, double totalExpense, int count) {
     cout << "-------------------------------------" << '\n';
     cout << "Total income:    " << totalIncome << '\n';
     cout << "Total expense:   " << totalExpense << '\n';
-    cout << "Average balance: " << averageBalance << '\n';
+    if (averageBalance > 0)
+    {
+        cout << "Average balance: " <<'+'<< averageBalance << '\n';
+    }
+    else cout << "Average balance: " << '+' << averageBalance << '\n';
     cout << "\n\n";
 }
 
@@ -296,19 +320,19 @@ void printMonthInfo(const Month* months, int idx)
     cout << "Income: " << months[idx].income << '\n';
     cout << "Expense: " << months[idx].expense << '\n';
     cout << "Balance: " << months[idx].balance << '\n';
-    cout << "Expense ratio: " << setprecision(4) << percentageExpense <<"%" << '\n';
+    cout << "Expense ratio: " << setprecision(2) << percentageExpense <<"%" << '\n';
+    cout << "\n\n";
 
 }
 void executeSearch(const Month* months, int monthsCount, bool isSetupDone)
 {
-   
+    char wantedMonth[MAX_LENGTH_STR];
+    cin >> wantedMonth;
+
     if (!isSetupDoneAndMonthsC(isSetupDone, monthsCount))
     {
         return;
     }
-
-    char wantedMonth[MAX_LENGTH_STR];
-    cin >> wantedMonth;
 
     int monthID = getMonthIdByName(wantedMonth);
 
@@ -385,11 +409,21 @@ void printTopMonths(const Month* months,int choice, int monthsCount)
         }
         cout << valueToShow << '\n';
     }
+    cout << "\n\n";
 }
 void executeSort(Month* months, int monthsCount, bool isSetupDone)
 {
     if (!isSetupDoneAndMonthsC(isSetupDone, monthsCount))
     {
+        return;
+    }
+
+    if (cin.fail())
+    {
+        cin.clear();
+        char temp;
+        while (cin.get(temp) && temp != '\n');
+        cout << "Invalid input! Please enter a month." << "\n\n";
         return;
     }
 
@@ -441,26 +475,6 @@ void executeSort(Month* months, int monthsCount, bool isSetupDone)
     delete[] tempMonths;
 }
 
-double calculateAvgChange(const Month* months, int monthsCount)
-{
-    int firstIdx = -1, lastIdx = -1;
-    for (int i = 0; i < monthsCount; i++)
-    {
-        if (isMonthFilled(months[i]))
-        {
-            if (firstIdx == -1) firstIdx = i;
-            lastIdx = i;
-        }
-    }
-
-    if (firstIdx == -1 || lastIdx == -1 || firstIdx == lastIdx) {
-        return 0.0;
-    }
-
-    double TotalChange = months[lastIdx].balance - months[firstIdx].balance;
-    int timeDiff = lastIdx - firstIdx;
-    return TotalChange / timeDiff;
-}
 void executeForecast(Month * months, int monthsCount, bool isSetupDone)
 {
     if (!isSetupDoneAndMonthsC(isSetupDone, monthsCount))
@@ -480,14 +494,25 @@ void executeForecast(Month * months, int monthsCount, bool isSetupDone)
         return;
     }
 
-    int currentSavings = 0;
+    double currentSavings = 0;
+    int filledCount = 0;
     for (int i = 0; i < monthsCount; i++)
     {
-        currentSavings += months[i].balance;
+        if (months[i].isFilled)
+        {
+            currentSavings += months[i].balance;
+            filledCount++;
+        }
     }
 
-    double avgChange = calculateAvgChange(months, monthsCount);
+    if (filledCount == 0) {
+        cout << "No data available to make a forecast." << endl;
+        return;
+    }
 
+    double avgChange = currentSavings / filledCount;
+    double forecastedAmount = currentSavings + (inputedMonths * avgChange);
+    cout << fixed << setprecision(2);
     cout << "Current savings: " << currentSavings << '\n';
     cout << "Average monthly change: ";
     if (avgChange > 0)
@@ -495,8 +520,8 @@ void executeForecast(Month * months, int monthsCount, bool isSetupDone)
         cout << "+" << avgChange << '\n';
     }
     else cout << avgChange << '\n';
-    double forecastedAmount = currentSavings + (inputedMonths * avgChange);
-    cout << "Predicted savings after " << inputedMonths << " months: " <<fixed<< setprecision(2) << forecastedAmount << '\n';
+
+    cout << "Predicted savings after " << inputedMonths << " months: "<< forecastedAmount << '\n';
 }
 
 void executeChart(const Month* months, int monthsCount, bool isSetupDone)
