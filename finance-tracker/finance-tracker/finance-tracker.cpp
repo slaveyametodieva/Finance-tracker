@@ -394,6 +394,11 @@ void executeSort(Month* months, int monthsCount, bool isSetupDone)
         return;
     }
 
+    Month* tempMonths = new Month[monthsCount];
+    for (int i = 0; i < monthsCount; i++)
+    {
+        tempMonths[i] = months[i];
+    }
     for (int i = 0; i < monthsCount - 1; i++)
     {
         for (int j = 0; j < monthsCount - i - 1; j++)
@@ -403,18 +408,18 @@ void executeSort(Month* months, int monthsCount, bool isSetupDone)
 
             if (choice == 1)
             {
-                firstValue = months[j].income;
-                secondValue = months[j + 1].income;
+                firstValue = tempMonths[j].income;
+                secondValue = tempMonths[j + 1].income;
             }
             else if (choice == 2)
             {
-                firstValue = months[j].expense;
-                secondValue = months[j + 1].expense;
+                firstValue = tempMonths[j].expense;
+                secondValue = tempMonths[j + 1].expense;
             }
             else 
             {
-                firstValue = months[j].balance;
-                secondValue = months[j + 1].balance;
+                firstValue = tempMonths[j].balance;
+                secondValue = tempMonths[j + 1].balance;
             }
 
             if (firstValue < secondValue)
@@ -423,11 +428,12 @@ void executeSort(Month* months, int monthsCount, bool isSetupDone)
             }
 
             if (shouldSwap) {
-                swapMonths(months[j], months[j + 1]);
+                swapMonths(tempMonths[j], tempMonths[j + 1]);
             }
         }
     }
-    printTopMonths(months, choice, monthsCount);
+    printTopMonths(tempMonths, choice, monthsCount);
+    delete[] tempMonths;
 }
 
 double calculateAvgChange(const Month* months, int monthsCount)
@@ -509,6 +515,7 @@ void runAplication()
         switch (cmdId) {
         case CMD_EXIT:
             delete[] months;
+            return;
 
         case CMD_SETUP:
             executeSetup(months, monthsCount, isSetupDone);
