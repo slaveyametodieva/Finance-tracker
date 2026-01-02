@@ -223,10 +223,13 @@ void executeAdd(Month* months, int monthsCount, bool isSetupDone) {
 
 void printMonthsInfo(const Month* months, int idx) {
     int currMonthCount = idx + 1;
+    if (months[idx].isFilled)
+    {
         cout << setw(10) << getMonthName(currMonthCount)
             << " | " << setw(10) << months[idx].income
             << " | " << setw(10) << months[idx].expense
             << " | " << setw(10) << months[idx].balance << '\n';
+    }
 }
 
 void printReportSummary(double totalIncome, double totalExpense, int count) {
@@ -252,15 +255,17 @@ void executeReport(const Month* months, int monthsCount, bool isSetupDone) {
     cout << "--------------------------------------------------" << '\n';
     cout << fixed << setprecision(2);
 
+    int monthsFilledCount = 0;
     for (int i = 0; i < monthsCount; i++)
     {
         totalIncome += months[i].income;
         totalExpense += months[i].expense;
+        if (months[i].isFilled) monthsFilledCount++;
 
         printMonthsInfo(months, i);
     }
 
-    printReportSummary(totalIncome, totalExpense, monthsCount);
+    printReportSummary(totalIncome, totalExpense, monthsFilledCount);
 }
 
 int getMonthIdByName(const char* monthName)
@@ -496,7 +501,71 @@ void executeForecast(Month * months, int monthsCount, bool isSetupDone)
 
 void executeChart(const Month* months, int monthsCount, bool isSetupDone)
 {
-    
+    if (!isSetupDoneAndMonthsC(isSetupDone, monthsCount))
+    {
+        return;
+    }
+
+    double maxIncome = months[0].income;
+    for (int i = 1; i < monthsCount; i++)
+    {
+        if (isMonthFilled(months[i]) && months[i].income > maxIncome)
+        {
+            maxIncome = months[i].income;
+        }
+    }
+
+    if (maxIncome == 0)
+    {
+        cout << "No income data to make a chart." << '\n';
+        return;
+    }
+
+    int rows = 5;
+    int step = (int)maxIncome / rows;
+    if (step < 1) step = 1;
+    int maxScale = step * rows;
+
+    while (maxScale < maxIncome)
+    {
+        maxScale += step;
+    }
+
+    cout << "\n=== YEARLY FINANCIAL CHART ===\n";
+    cout << "      |\n";
+
+    for (int level = maxScale; level >= step; level -= step)
+    {
+        cout << setw(5) << level << " | ";
+
+        for (int i = 0; i < monthsCount; i++)
+        {
+            if (isMonthFilled(months[i]))
+            {
+                if (months[i].income >= level)
+                {
+                    cout << "#   ";
+                }
+                else
+                {
+                    cout << "    ";
+                }
+            }
+        }
+        cout << '\n';
+    }
+
+    cout << "      -------------------------\n";
+    cout << "       ";
+    for (int i = 0; i < monthsCount; i++)
+    {
+        if (isMonthFilled(months[i]))
+        {
+            const char* name = getMonthName(months[i].id);
+            cout << name[0] << name[1] << name[2] << " ";
+        }
+    }
+    cout << "\n\n";
 }
 
 void runAplication()
